@@ -12,10 +12,12 @@ JOIN track t ON a.id = t.album_id
 GROUP BY a.name;
 
 SELECT a.name FROM author a
-JOIN albumauthor a2 ON a.id = a2.author_id
-JOIN album al ON a2.album_id = al.id 
-WHERE YEAR !='2020'
-GROUP BY a.name;
+WHERE a.name NOT IN (
+	SELECT a.name FROM author a
+	JOIN albumauthor a2 ON a.id = a2.author_id
+	JOIN album al ON a2.album_id = al.id 
+	WHERE YEAR !='2020'
+	);
 
 SELECT m.name FROM mixtape m
 JOIN trackmixtape t2 ON m.id = t2.mixtape_id 
@@ -26,15 +28,16 @@ JOIN author a ON a2.author_id = a.id
 WHERE a.name LIKE 'OutKast'
 GROUP BY m.name;
 
-SELECT al.name FROM album al
+SELECT DISTINCT al.name FROM album al
 JOIN albumauthor a2 ON al.id = a2.album_id 
 JOIN author a ON a2.author_id = a.id 
 JOIN genreauthor g ON a.id = g.author_id 
-JOIN genre ON g.genre_id = genre.id
 GROUP BY al.name 
-HAVING count(DISTINCT genre.name) > 1
+HAVING count(DISTINCT g.genre_id) > 1
 ORDER BY al.name;
  
+
+
 SELECT t.name FROM track t
 LEFT JOIN trackmixtape t2 ON t.id = t2.track_id
 WHERE t2.mixtape_id is NULL;
